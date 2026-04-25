@@ -1,12 +1,14 @@
 import { itemsData } from "@/data/items";
+import Link from "next/link";
 
-export default async  function Details({ params }) {
-   const { id } = await params;
-console.log(id);
+export default async function Details({ params }) {
+  const { id } = await params;
+
   const item = itemsData.find((i) => i.id === String(id));
+
   if (!item) {
     return (
-      <div className="p-6 text-center text-gray-500">
+      <div className="min-h-screen flex items-center justify-center text-gray-500">
         Item not found
       </div>
     );
@@ -14,60 +16,102 @@ console.log(id);
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto bg-white shadow-md rounded-xl overflow-hidden">
 
-        {/* Image */}
-        <img
-          src={item.image}
-          alt={item.title}
-          className="w-full h-72 object-cover"
-        />
+      {/* BACK BUTTON */}
+      <div className="max-w-6xl mx-auto mb-6">
+        <Link
+          href="/items"
+          className="text-sm font-medium text-gray-600 hover:text-black transition"
+        >
+          ← Back to Items
+        </Link>
+      </div>
 
-        {/* Content */}
-        <div className="p-6">
-          <h1 className="text-3xl font-bold text-gray-800">
+      {/* MAIN CARD */}
+      <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg overflow-hidden grid md:grid-cols-2">
+
+        {/* IMAGE */}
+        <div className="bg-gray-100">
+          <img
+            src={item.image}
+            alt={item.title}
+            className="w-full h-full object-cover min-h-[400px]"
+          />
+        </div>
+
+        {/* DETAILS */}
+        <div className="p-8 flex flex-col justify-center">
+
+          <h1 className="text-4xl font-bold text-gray-900">
             {item.title}
           </h1>
 
-          <p className="mt-3 text-gray-600 leading-relaxed">
-            {item.description}
+          <p className="mt-4 text-gray-600 leading-relaxed">
+            {item.fullDescription || item.description}
           </p>
 
-          {/* Meta */}
-          <div className="mt-5 flex gap-4 text-sm">
-            <span className="bg-gray-100 px-3 py-1 rounded-full">
-              Category: {item.category}
-            </span>
+          {/* KEY INFO */}
+          <div className="mt-6 space-y-3">
 
-            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full">
-              Price: ${item.price}
-            </span>
+            <div className="flex justify-between border-b pb-2">
+              <span className="text-gray-500">Category</span>
+              <span className="font-medium">{item.category}</span>
+            </div>
+
+            <div className="flex justify-between border-b pb-2">
+              <span className="text-gray-500">Price</span>
+              <span className="font-bold text-black">
+                ${item.price}
+              </span>
+            </div>
+
           </div>
 
-          {/* Related Section */}
-          <h2 className="mt-10 text-xl font-semibold">
-            Related Items
-          </h2>
+          {/* CTA */}
+          <button className="mt-6 cursor-pointer bg-black text-white py-3 rounded-xl hover:bg-gray-800 transition">
+            Add to Cart
+          </button>
+        </div>
+      </div>
 
-          <div className="grid sm:grid-cols-2 gap-4 mt-4">
-            {itemsData
-              .filter(
-                (i) =>
-                  i.category === item.category && i.id !== item.id
-              )
-              .slice(0, 2)
-              .map((rel) => (
-                <div
-                  key={rel.id}
-                  className="border rounded-lg p-3 hover:shadow-md transition"
-                >
-                  <h3 className="font-semibold">{rel.title}</h3>
-                  <p className="text-sm text-gray-500">
+      {/* RELATED ITEMS */}
+      <div className="max-w-6xl mx-auto mt-12">
+
+        <h2 className="text-2xl font-bold mb-6">
+          Related Items
+        </h2>
+
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+          {itemsData
+            .filter(
+              (i) =>
+                i.category === item.category && i.id !== item.id
+            )
+            .slice(0, 3)
+            .map((rel) => (
+              <Link
+                href={`/items/${rel.id}`}
+                key={rel.id}
+                className="bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden"
+              >
+                <img
+                  src={rel.image}
+                  className="h-40 w-full object-cover"
+                />
+
+                <div className="p-4">
+                  <h3 className="font-semibold">
+                    {rel.title}
+                  </h3>
+
+                  <p className="text-gray-500 text-sm mt-1">
                     ${rel.price}
                   </p>
                 </div>
-              ))}
-          </div>
+              </Link>
+            ))}
+
         </div>
       </div>
     </div>
