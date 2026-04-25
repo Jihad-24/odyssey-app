@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { itemsData } from "@/data/items";
-import ItemCard from "@/components/ItemCard";
 import Link from "next/link";
 
 export default function Items() {
