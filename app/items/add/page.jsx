@@ -4,6 +4,8 @@ import PrivateRoute from "@/components/PrivateRoute";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export default function AddItem() {
   const router = useRouter();
@@ -20,7 +22,7 @@ export default function AddItem() {
     };
 
     try {
-      await axios.post("http://localhost:5000/items", newItem);
+      await axios.post("http://localhost:5001/products", newItem);
 
       alert("Item added successfully");
       router.push("/items");
@@ -32,7 +34,9 @@ export default function AddItem() {
 
   return (
     <PrivateRoute>
-      <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+      <div className="">
+        <Navbar />
+      <div className="min-h-screen py-20 flex items-center justify-center px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
         <div className="w-full max-w-2xl relative">
           {/* glow effect */}
           <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-3xl blur-xl opacity-30"></div>
@@ -104,7 +108,11 @@ export default function AddItem() {
             </Link>
           </div>
         </div>
+      </div>      
+            <Footer />
+
       </div>
+
     </PrivateRoute>
   );
 }

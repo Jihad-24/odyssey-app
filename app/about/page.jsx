@@ -1,9 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 export default function About() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4 py-16">
+   <div className="">
+    <Navbar />
+     <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center px-4 pt-16 pb-40">
 
       <div className="max-w-5xl w-full">
 
@@ -60,5 +63,7 @@ export default function About() {
         </div>
       </div>
     </div>
+    <Footer />
+   </div>
   );
 }

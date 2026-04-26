@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
-
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 export default function Contact() {
   const [loading, setLoading] = useState(false);
 
@@ -18,7 +19,9 @@ export default function Contact() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center px-4 py-16">
+  <div className="">
+    <Navbar />
+      <div className="min-h-screen  bg-gradient-to-br from-gray-900 via-gray-800 to-black flex items-center justify-center px-4 pt-20 pb-40">
 
       <div className="max-w-5xl w-full grid md:grid-cols-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl overflow-hidden shadow-2xl text-white">
 
@@ -103,5 +106,7 @@ export default function Contact() {
 
       </div>
     </div>
+    <Footer />
+  </div>
   );
 }

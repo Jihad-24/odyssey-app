@@ -11,36 +11,36 @@ export default function Manage() {
   const [loading, setLoading] = useState(true);
 
   // FETCH FROM MONGODB API
-  // const fetchItems = async () => {
-  //   try {
-  //     const res = await axios.get("http://localhost:5000/items");
-  //     setItems(res.data);
-  //   } catch (error) {
-  //     console.error("Failed to load items", error);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const fetchItems = async () => {
+    try {
+      const res = await axios.get("http://localhost:5001/products");
+      setItems(res.data);
+    } catch (error) {
+      console.error("Failed to load items", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  // useEffect(() => {
-  //   fetchItems();
-  // }, [items?.length]);
   useEffect(() => {
-    setItems(itemsData);
-    setLoading(false);
-  }, []);
+    fetchItems();
+  }, [items?.length]);
+  // useEffect(() => {
+  //   setItems(itemsData);
+  //   setLoading(false);
+  // }, []);
 
   // DELETE FROM MONGODB
-  // const handleDelete = async (id) => {
-  //   try {
-  //     await axios.delete(`http://localhost:5000/items/${id}`);
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5001/products/${id}`);
 
-  //     // update UI instantly
-  //     setItems((prev) => prev.filter((item) => item._id !== id));
-  //   } catch (error) {
-  //     console.error("Delete failed", error);
-  //   }
-  // };
+      // update UI instantly
+      setItems((prev) => prev.filter((item) => item._id !== id));
+    } catch (error) {
+      console.error("Delete failed", error);
+    }
+  };
 
   return (
     <PrivateRoute>

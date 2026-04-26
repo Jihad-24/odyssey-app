@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const { user, logout } = useAuth();
+  const [items, setItems] = useState([]);
 
   const testimonials = [
     {
@@ -39,6 +40,14 @@ export default function Home() {
       bg: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
     },
   ];
+
+  // 🔥 Fetch from backend
+  useEffect(() => {
+    fetch("http://localhost:5001/products")
+      .then((res) => res.json())
+      .then((data) => setItems(data))
+      .catch((err) => console.error(err));
+  }, []);
 
   const [index, setIndex] = useState(0);
 
@@ -150,10 +159,10 @@ export default function Home() {
         <h2 className="text-2xl font-bold mb-6">Featured Items</h2>
 
         <div className="grid md:grid-cols-3 gap-6">
-          {itemsData.length > 0 ? (
-            itemsData.slice(1, 4).map((item) => (
+          {items.length > 0 ? (
+            items.slice(1, 4).map((item) => (
               <div
-                key={item.id}
+                key={item._id}
                 className="bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition"
               >
                 {/* Image */}
@@ -175,7 +184,7 @@ export default function Home() {
 
                   <button className="mt-4 w-full">
                     <Link
-                      href={`/items/${item?.id}`}
+                      href={`/items/${item?._id}`}
                       className="block w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-center transition"
                     >
                       View Details
@@ -355,7 +364,7 @@ export default function Home() {
       </section>
 
       {/* 7 Footer */}
-     <Footer />
+      <Footer />
     </>
   );
 }
