@@ -7,8 +7,12 @@ import Footer from "@/components/Footer";
 export default async function Details({ params }) {
   const { id } = await params;
   const [itemRes, allRes] = await Promise.all([
-    fetch(`http://localhost:5001/items/${id}`, { cache: "no-store" }),
-    fetch(`http://localhost:5001/products`, { cache: "no-store" }),
+    fetch(`https://odyssey-app-server.vercel.app/items/${id}`, {
+      cache: "no-store",
+    }),
+    fetch(`https://odyssey-app-server.vercel.app/products`, {
+      cache: "no-store",
+    }),
   ]);
 
   const item = await itemRes.json();
