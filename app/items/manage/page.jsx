@@ -32,13 +32,21 @@ export default function Manage() {
 
   // DELETE FROM MONGODB
   const handleDelete = async (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this item?",
+    );
+
+    if (!confirmDelete) return;
+
     try {
       await axios.delete(`http://localhost:5001/products/${id}`);
 
-      // update UI instantly
       setItems((prev) => prev.filter((item) => item._id !== id));
+
+      alert("Item deleted successfully ✅");
     } catch (error) {
       console.error("Delete failed", error);
+      alert("Failed to delete item ❌");
     }
   };
 
@@ -47,29 +55,25 @@ export default function Manage() {
       <div className="min-h-screen bg-gray-50 p-6">
         {/* HEADER */}
         <div className="max-w-6xl mx-auto mb-6 flex items-center justify-between">
+          {/* BACK */}
+          <Link
+            href="/"
+            className="text-sm font-medium text-gray-600 hover:text-black transition"
+          >
+            ← Back to Home
+          </Link>
 
-  {/* BACK */}
-  <Link
-    href="/"
-    className="text-sm font-medium text-gray-600 hover:text-black transition"
-  >
-    ← Back to Home
-  </Link>
+          {/* TITLE */}
+          <div className="text-center">
+            <h1 className="text-3xl font-bold">Manage Items</h1>
+            <p className="text-gray-500 text-sm">
+              View, manage and delete your products
+            </p>
+          </div>
 
-  {/* TITLE */}
-  <div className="text-center">
-    <h1 className="text-3xl font-bold">
-      Manage Items
-    </h1>
-    <p className="text-gray-500 text-sm">
-      View, manage and delete your products
-    </p>
-  </div>
-
-  {/* RIGHT SPACER (keeps center aligned) */}
-  <div className="w-24"></div>
-
-</div>
+          {/* RIGHT SPACER (keeps center aligned) */}
+          <div className="w-24"></div>
+        </div>
         {/* CONTENT */}
         <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl overflow-hidden">
           {loading ? (
@@ -113,7 +117,7 @@ export default function Manage() {
 
                           <button
                             onClick={() => handleDelete(item._id)}
-                            className="px-3 py-1 rounded-lg bg-red-500 text-white text-sm hover:bg-red-600"
+                            className="px-3 py-1 cursor-pointer rounded-lg bg-red-500 text-white text-sm hover:bg-red-600"
                           >
                             Delete
                           </button>
