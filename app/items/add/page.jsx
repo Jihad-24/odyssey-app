@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import PrivateRoute from "@/components/PrivateRoute";
 import axios from "axios";
 import Link from "next/link";
@@ -10,22 +11,67 @@ import Footer from "@/components/Footer";
 export default function AddItem() {
   const router = useRouter();
 
+  const [imageFile, setImageFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+
+  // handle image select
+  const handleImageChange = (file) => {
+    if (!file) return;
+    setImageFile(file);
+    setPreview(URL.createObjectURL(file));
+  };
+
+  // drag drop
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files[0];
+    handleImageChange(file);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const newItem = {
-      title: e.target.title.value,
-      shortDesc: e.target.shortDesc.value,
-      fullDesc: e.target.fullDesc.value,
-      price: Number(e.target.price.value),
-      category: e.target.category.value,
-    };
+    if (!imageFile) {
+      alert("Please upload an image");
+      return;
+    }
 
     try {
+      // 🔥 upload to ImgBB
+      const formData = new FormData();
+      formData.append("image", imageFile);
+
+      const imgbbRes = await axios.post(
+        `https://api.imgbb.com/1/upload?key=140f2d0db1502e65c2c0ee7bfc66be98`,
+        formData,
+      );
+
+      const imageUrl = imgbbRes.data.data.url;
+
+      const price = Number(e.target.price.value);
+      const oldPrice = Number(e.target.oldPrice.value);
+
+      const newItem = {
+        title: e.target.title.value,
+        category: e.target.category.value,
+        price,
+        oldPrice,
+        discount: Math.round(((oldPrice - price) / oldPrice) * 100),
+        rating: Number(e.target.rating.value),
+        ratingCount: Number(e.target.ratingCount.value),
+        delivery: e.target.delivery.value,
+        description: e.target.description.value,
+        image: imageUrl,
+      };
+
       await axios.post("http://localhost:5001/products", newItem);
 
       alert("Item added successfully");
-      router.push("/items");
+      // router.push("/items");
     } catch (error) {
       console.error(error);
       alert("Failed to add item");
@@ -34,85 +80,143 @@ export default function AddItem() {
 
   return (
     <PrivateRoute>
-      <div className="">
+      <div>
         <Navbar />
-      <div className="min-h-screen py-20 flex items-center justify-center px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
-        <div className="w-full max-w-2xl relative">
-          {/* glow effect */}
-          <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-3xl blur-xl opacity-30"></div>
 
-          {/* glass card */}
-          <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl text-white">
-            <h1 className="text-3xl font-bold">Create New Item</h1>
-            <p className="text-white/70 mt-1 mb-6">
-              Add product details to your store
-            </p>
+        <div className="min-h-screen py-20 flex items-center justify-center px-4 bg-gradient-to-br from-gray-900 via-gray-800 to-black">
+          <div className="w-full max-w-2xl relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-blue-500 rounded-3xl blur-xl opacity-30"></div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                name="title"
-                placeholder="Product title"
-                required
-                className="w-full bg-white/10 border border-white/20 rounded-xl p-3 outline-none focus:ring-2 focus:ring-pink-500 placeholder-white/50"
-              />
+            <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl text-white">
+              <h1 className="text-3xl font-bold">Create New Item</h1>
+              <p className="text-white/70 mt-1 mb-6">
+                Add product details to your store
+              </p>
 
-              <input
-                name="shortDesc"
-                placeholder="Short description"
-                required
-                className="w-full bg-white/10 border border-white/20 rounded-xl p-3 outline-none focus:ring-2 focus:ring-purple-500 placeholder-white/50"
-              />
-
-              <textarea
-                name="fullDesc"
-                placeholder="Full description"
-                required
-                rows={4}
-                className="w-full bg-white/10 border border-white/20 rounded-xl p-3 outline-none focus:ring-2 focus:ring-blue-500 placeholder-white/50"
-              />
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <input
-                  name="price"
-                  type="number"
-                  placeholder="Price"
+                  name="title"
+                  placeholder="Product title"
                   required
-                  className="bg-white/10 border border-white/20 rounded-xl p-3 outline-none focus:ring-2 focus:ring-pink-500 placeholder-white/50"
+                  className="input"
                 />
 
-                <select
-                  name="category"
-                  className="bg-black/10 border text-black border-white/20 rounded-xl p-3 outline-none focus:ring-2 focus:ring-purple-500"
-                >
+                <textarea
+                  name="description"
+                  placeholder="Description"
+                  required
+                  rows={3}
+                  className="input"
+                />
+
+                {/* price section */}
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    name="price"
+                    type="number"
+                    placeholder="Price"
+                    required
+                    className="input"
+                  />
+                  <input
+                    name="oldPrice"
+                    type="number"
+                    placeholder="Old Price"
+                    required
+                    className="input"
+                  />
+                </div>
+
+                {/* rating section */}
+                <div className="grid grid-cols-2 gap-4">
+                  <input
+                    name="rating"
+                    type="number"
+                    step="0.1"
+                    placeholder="Rating"
+                    className="input"
+                  />
+                  <input
+                    name="ratingCount"
+                    type="number"
+                    placeholder="Rating Count"
+                    className="input"
+                  />
+                </div>
+
+                <select name="delivery" required className="input text-black">
+                  <option value="">Select Delivery Type</option>
+                  <option value="Free Delivery">Free Delivery</option>
+                  <option value="Paid Delivery">Paid Delivery</option>
+                </select>
+                <select name="category" className="input text-black">
                   <option>Electronics</option>
                   <option>Fashion</option>
                   <option>Accessories</option>
                 </select>
-              </div>
 
-              <button
-                type="submit"
-                className="w-full cursor-pointer mt-2 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] transition transform"
-                onSubmit={handleSubmit}
-              >
-                Add Item
-              </button>
-            </form>
-            <Link href={"/items"}>
-              <button
-                type="submit"
-                className="w-full cursor-pointer mt-2 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 text-white py-3 rounded-xl font-semibold hover:scale-[1.02] transition transform"
-              >
-                Back to Items
-              </button>
-            </Link>
+                {/* 🔥 drag & drop upload */}
+                <div
+                  onDrop={handleDrop}
+                  onDragOver={handleDragOver}
+                  className="border-2 border-dashed border-white/30 rounded-xl p-6 text-center cursor-pointer hover:border-pink-500"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(e.target.files[0])}
+                    className="hidden"
+                    id="imageUpload"
+                  />
+
+                  <label htmlFor="imageUpload" className="cursor-pointer block">
+                    {preview ? (
+                      <img
+                        src={preview}
+                        alt="Preview"
+                        className="mx-auto max-h-48 rounded-lg object-cover"
+                      />
+                    ) : (
+                      <p className="text-white/60">
+                        Drag & drop or click to upload image
+                      </p>
+                    )}
+                  </label>
+                </div>
+
+                {/* remove image */}
+                {preview && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPreview(null);
+                      setImageFile(null);
+                    }}
+                    className="text-sm text-red-400 cursor-pointer hover:underline"
+                  >
+                    Remove Image
+                  </button>
+                )}
+
+                <button
+                  type="submit"
+                  className="w-full cursor-pointer mt-2   bg-gradient-to-r  from-pink-500 via-purple-500 to-blue-500 py-3 rounded-xl font-semibold"
+                >
+                  Add Item
+                </button>
+              </form>
+
+              <Link href="/items">
+                <button className="w-full mt-3 bg-gray-700 py-3 rounded-xl cursor-pointer hover:bg-gray-600">
+                  Back to Items
+                </button>
+              </Link>
+            </div>
           </div>
         </div>
-      </div>      
-            <Footer />
 
+        <Footer />
       </div>
-
     </PrivateRoute>
   );
 }
